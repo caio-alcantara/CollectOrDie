@@ -22,12 +22,13 @@ class startScene extends Phaser.Scene {
     }
 
     create() {
-        this.ceu = this.add.image(gameState.larguraJogo/2, gameState.alturaJogo/2, 'ceu');    
-        this.chao = this.add.image(400, 345, 'chao');
+        this.ceu = this.add.image(gameState.larguraJogo/2, gameState.alturaJogo/4, 'ceu');    
+        this.chao = this.add.image(400, 524, 'chao').setScale(1.1);
         this.logo = this.add.image(400, -300, 'logo').setScale(0.7);
         this.start = this.add.image(400, 400, 'start').setScale(0.8).setAlpha(0);
         this.help = this.add.image(400, 465, 'help').setScale(0.4).setAlpha(0);
         this.blackRectangleStart = this.add.rectangle(400, 300, 800, 600, 0x000000).setAlpha(0);
+
         if(gameState.hasBeenToStartScene == false){
             this.blackRectangleBegin = this.add.rectangle(400, 300, 800, 600, 0x000000);
 
@@ -60,7 +61,7 @@ class startScene extends Phaser.Scene {
             gameState.hasBeenToStartScene = true;
 
         } else {
-            this.logo = this.add.image(400, 210, 'logo').setScale(0.7);
+            this.logo.y = 210;
             this.start.setAlpha(1);
             this.help.setAlpha(1);
         }
@@ -69,6 +70,7 @@ class startScene extends Phaser.Scene {
             this.help.on('pointerup', () => {
                 this.scene.start('helpScene');
             });
+
         this.start.setInteractive();
             this.start.on('pointerup', () => {
                 this.tweens.add({
@@ -80,12 +82,7 @@ class startScene extends Phaser.Scene {
                         this.scene.start('level1');
                     }
                 });
-                
             });
-    }
-
-    update() {
-
     }
 }
 
