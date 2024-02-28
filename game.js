@@ -2,7 +2,8 @@
     larguraJogo: 800,
     alturaJogo: 600,
     score: 0,
-    hasBeenToStartScene: false
+    hasBeenToStartScene: false,
+    timePassed: 0
 }
  // Configuração básica do jogo
  const config = {

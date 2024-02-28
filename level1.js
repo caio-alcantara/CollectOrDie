@@ -82,6 +82,14 @@ class level1 extends Phaser.Scene {
         this.movimentaPlataformas();
         this.movimentaPlayer();
         this.coletaMoedas();
+
+        if (this.currentTime === 0) {
+            this.scene.start('endScene2');
+        }
+        if (this.coin1.coletada === true && this.coin2.coletada === true && this.coin3.coletada === true && this.coin4.coletada === true) {
+            gameState.timePassed = 30 - this.currentTime;
+            this.scene.start('level2');
+        }
         
     }
 
@@ -207,24 +215,32 @@ class level1 extends Phaser.Scene {
 
     coletaMoedas() {
         if (this.physics.overlap(this.player, this.coin1)) {
-            gameState.score += 5;
+            gameState.score += Math.round(this.currentTime * 0.25);
             this.scoreText.setText('Score: ' + gameState.score);
-            this.coin1.destroy();
+            this.coin1.x = -300;
+            this.coin1.body.setAllowGravity(true);
+            this.coin1.coletada = true;
         }
         if (this.physics.overlap(this.player, this.coin2)) {
-            gameState.score += 5;
+            gameState.score += Math.round(this.currentTime * 0.25);
             this.scoreText.setText('Score: ' + gameState.score);
-            this.coin2.destroy();
+            this.coin2.x = -300;
+            this.coin2.body.setAllowGravity(true);
+            this.coin2.coletada = true;
         }
         if (this.physics.overlap(this.player, this.coin3)) {
-            gameState.score += 5;
+            gameState.score += Math.round(this.currentTime * 0.25);
             this.scoreText.setText('Score: ' + gameState.score);
-            this.coin3.destroy();
+            this.coin3.x = -300;
+            this.coin3.body.setAllowGravity(true);
+            this.coin3.coletada = true;
         }
         if (this.physics.overlap(this.player, this.coin4)) {
-            gameState.score += 5;
+            gameState.score += Math.round(this.currentTime * 0.25);
             this.scoreText.setText('Score: ' + gameState.score);
-            this.coin4.destroy();
+            this.coin4.x = -300;
+            this.coin4.body.setAllowGravity(true);
+            this.coin4.coletada = true;
         }
     }
 
