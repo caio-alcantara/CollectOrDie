@@ -1,7 +1,8 @@
  const gameState = {
     larguraJogo: 800,
     alturaJogo: 600,
-    pontos: 0
+    score: 0,
+    hasBeenToStartScene: false
 }
  // Configuração básica do jogo
  const config = {
@@ -17,7 +18,7 @@
          }
      },
 
-     scene: [startScene, level1, level2, endScene]
+     scene: [startScene, helpScene, level1, level2, endScene1, endScene2]
  };
- 
+
  const game = new Phaser.Game(config);
