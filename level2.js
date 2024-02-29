@@ -97,7 +97,7 @@ class level2 extends Phaser.Scene {
             this.scene.start('endScene2');
         }
         if (this.coin1.coletada === true && this.coin2.coletada === true && this.coin3.coletada === true && this.coin4.coletada === true && this.coin5.coletada === true) {
-            gameState.timePassed = 20 - this.currentTime;
+            gameState.timePassed += 20 - this.currentTime;
             this.scene.start('endScene1')
         }
         
