@@ -292,6 +292,7 @@ class level2 extends Phaser.Scene {
         }
     }
     
+    
     fadeIn() {
         this.blackRectangleBegin = this.add.rectangle(400, 300, 800, 600, 0x000000);
         this.tweens.add({
