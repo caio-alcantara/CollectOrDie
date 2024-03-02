@@ -1,8 +1,10 @@
 class level1 extends Phaser.Scene {
+    // Define o nome da cena e herda propriedades da classe Scene
     constructor() {
         super({ key: 'level1' });
     }
 
+    // Cria variáveis que poderão ser usadas em quaisquer métodos
     ceu;
     chao;
     blackRectangleBegin;
@@ -22,6 +24,7 @@ class level1 extends Phaser.Scene {
     timer;
 
     preload() {
+        // Carrega imagens e spritesheets
         this.load.image('ceu', 'assets/ceu.png');
         this.load.image('chao', 'assets/chao.png');
         this.load.image('plataform1', 'assets/plataform1.png');
@@ -31,14 +34,16 @@ class level1 extends Phaser.Scene {
     }
 
     create() {
+        // Adiciona imagens do chão e do céu
         this.ceu = this.add.image(400, 300, 'ceu');
         this.chao = this.physics.add.staticGroup()
         this.chao.create(400, 580, 'chao');
-    
+        // Adiciona texto que mostra a pontuação e também o texto que mostra o tempo
         this.scoreText = this.add.text(10, 10, 'Score: 0', { fontSize: '32px', fill: '#000' });
         this.currentTime = 30;
         this.timeText = this.add.text(10, 50, 'Time: 30', { fontSize: '32px', fill: '#000' });
         this.timeText.setText('Time: ' + this.currentTime + 's');
+        // Adiciona um evento que atualiza o tempo a cada segundo
         this.timer = this.time.addEvent({
             delay: 1000,
             callback: this.updateTime,
@@ -46,10 +51,10 @@ class level1 extends Phaser.Scene {
             loop: true
         
         })
-
+        // Adiciona a possibilidade de usar as setas do teclado
         this.cursors = this.input.keyboard.createCursorKeys();
 
-        
+        // Cria animações do jogador
         this.anims.create({
             key: 'left',
             frames: this.anims.generateFrameNumbers('player', { start: 16, end: 23 }),
@@ -71,6 +76,7 @@ class level1 extends Phaser.Scene {
             repeat: -1
         });
 
+        // Cria plataformas e jogador e dá um efeito de fade in quando o nivel começa
         this.criaPlataformas();
         this.criaPlayer();
         this.fadeIn();
@@ -79,21 +85,24 @@ class level1 extends Phaser.Scene {
     
 
     update() {
+        // Atualiza o movimento das plataformas e do jogador e checa se ele coletou moedas
         this.movimentaPlataformas();
         this.movimentaPlayer();
         this.coletaMoedas();
 
+        // Condições de vitória e derrota
         if (this.currentTime === 0) {
             this.scene.start('endScene2');
         }
         if (this.coin1.coletada === true && this.coin2.coletada === true && this.coin3.coletada === true && this.coin4.coletada === true) {
-            gameState.timePassed = 30 - this.currentTime;
+            gameState.scoreAndTime[1] = 30 - this.currentTime;
             this.scene.start('level2');
         }
         
     }
 
     criaPlayer() {
+        // Adiciona o jogador e define suas propriedades físicas, bem como as colisões com outros objetos
         this.player = this.physics.add.sprite(50, 300, 'player').setScale(1.5);
         this.player.setBounce(0.2);
         this.player.setCollideWorldBounds(true);
@@ -106,6 +115,7 @@ class level1 extends Phaser.Scene {
     }
 
     criaPlataformas() {
+        // Adiciona as plataformas e as moedas e define suas propriedades físicas
         this.coin1 = this.physics.add.image(320, 400, 'coin');
         this.coin2 = this.physics.add.image(400, 200, 'coin');
         this.coin3 = this.physics.add.image(650, 320, 'coin');
@@ -114,17 +124,20 @@ class level1 extends Phaser.Scene {
         this.plataform2 = this.physics.add.image(400, 230, 'plataform1').setImmovable(true);
         this.plataform3 = this.physics.add.image(650, 350, 'plataform1').setImmovable(true);
         this.plataform4 = this.physics.add.image(600, 100, 'plataform2').setImmovable(true);
-        this.plataform1.body.setAllowGravity(false);
-        this.plataform2.body.setAllowGravity(false);
-        this.plataform3.body.setAllowGravity(false);
-        this.plataform4.body.setAllowGravity(false);
-        this.coin1.body.setAllowGravity(false);
-        this.coin2.body.setAllowGravity(false);
-        this.coin3.body.setAllowGravity(false);
-        this.coin4.body.setAllowGravity(false);
+
+        // Impede que as plataformas caiam do céu
+        for (let i = 1; i <= 4; i++) {
+            this['plataform' + i].body.setAllowGravity(false);
+            this['coin' + i].body.setAllowGravity(false);
+        }
     }
 
     movimentaPlataformas() {
+        // Utiliza a mesma lógica do jogo do pássaro para mover as plataformas:
+        // Se a plataforma está na posição 100, ela começa a ir para a direita
+        // Se a plataforma está na posição 700, ela começa a ir para a esquerda
+        // Se a plataforma está indo para a direita, ela se move 2 pixels para a direita
+        // Se a plataforma está indo para a esquerda, ela se move 2 pixels para a esquerda
         if (this.plataform1.x === 100) {
             this.plataform1.ida = true;
         }
@@ -184,6 +197,7 @@ class level1 extends Phaser.Scene {
     }
     
     movimentaPlayer() {
+        // Checa qual seta do teclado está pressionada e move o jogador na direção correspondente
         if (this.cursors.left.isDown)
         {
             this.player.setVelocityX(-200);
@@ -193,8 +207,8 @@ class level1 extends Phaser.Scene {
         {
            this.player.setVelocityX(200);
             this.player.anims.play('right', true);
-        } else if (this.cursors.up.isDown && this.player.body.touching.down){
-            this.player.setVelocityY(-300);
+        } else if (this.cursors.up.isDown && this.player.body.touching.down){ // Jogador tem que estar no chão para pular
+            this.player.setVelocityY(-300);                                   // a fim de evitar pulo duplo
         }
         else
         {
@@ -204,6 +218,7 @@ class level1 extends Phaser.Scene {
     }
     
     fadeIn() {
+        // Efeito de fade in na tela, que basicamente é um retângulo preto que desaparece
         this.blackRectangleBegin = this.add.rectangle(400, 300, 800, 600, 0x000000);
         this.tweens.add({
             targets: this.blackRectangleBegin,
@@ -214,30 +229,33 @@ class level1 extends Phaser.Scene {
     }
 
     coletaMoedas() {
+        // Checa se o jogador coletou as moedas e adiciona a pontuação 
+        // que varia de acordo com o tempo passado
+
         if (this.physics.overlap(this.player, this.coin1)) {
-            gameState.score += Math.round(this.currentTime * 0.25);
-            this.scoreText.setText('Score: ' + gameState.score);
+            gameState.scoreAndTime[0] += Math.round(this.currentTime * 0.25);
+            this.scoreText.setText('Score: ' + gameState.scoreAndTime[0]);
             this.coin1.x = -300;
             this.coin1.body.setAllowGravity(true);
             this.coin1.coletada = true;
         }
         if (this.physics.overlap(this.player, this.coin2)) {
-            gameState.score += Math.round(this.currentTime * 0.25);
-            this.scoreText.setText('Score: ' + gameState.score);
+            gameState.scoreAndTime[0] += Math.round(this.currentTime * 0.25);
+            this.scoreText.setText('Score: ' + gameState.scoreAndTime[0]);
             this.coin2.x = -300;
             this.coin2.body.setAllowGravity(true);
             this.coin2.coletada = true;
         }
         if (this.physics.overlap(this.player, this.coin3)) {
-            gameState.score += Math.round(this.currentTime * 0.25);
-            this.scoreText.setText('Score: ' + gameState.score);
+            gameState.scoreAndTime[0] += Math.round(this.currentTime * 0.25);
+            this.scoreText.setText('Score: ' + gameState.scoreAndTime[0]);
             this.coin3.x = -300;
             this.coin3.body.setAllowGravity(true);
             this.coin3.coletada = true;
         }
         if (this.physics.overlap(this.player, this.coin4)) {
-            gameState.score += Math.round(this.currentTime * 0.25);
-            this.scoreText.setText('Score: ' + gameState.score);
+            gameState.scoreAndTime[0] += Math.round(this.currentTime * 0.25);
+            this.scoreText.setText('Score: ' + gameState.scoreAndTime[0]);
             this.coin4.x = -300;
             this.coin4.body.setAllowGravity(true);
             this.coin4.coletada = true;
@@ -245,6 +263,7 @@ class level1 extends Phaser.Scene {
     }
 
     updateTime() {
+        // Atualiza o tempo a cada segundo
         if (this.currentTime != 0) {
             this.currentTime --;
             this.timeText.setText('Time: ' + this.currentTime + 's');

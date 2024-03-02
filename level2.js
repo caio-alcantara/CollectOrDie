@@ -33,6 +33,7 @@ class level2 extends Phaser.Scene {
     scoreText;
 
     preload() {
+        // Carrega as imagens
         this.load.image('ceu', 'assets/ceu.png');
         this.load.image('chao', 'assets/chao.png');
         this.load.image('plataform1', 'assets/plataform1.png');
@@ -43,14 +44,16 @@ class level2 extends Phaser.Scene {
     }
 
     create() {
+        // Adiciona céu, chão, texto de score e tempo e retângulo preto para fade in
         this.ceu = this.add.image(400, 300, 'ceu');
         this.chao = this.physics.add.staticGroup()
         this.chao.create(400, 580, 'chao');
-        this.scoreText = this.add.text(10, 10, `Score: ${gameState.score}`, { fontSize: '32px', fill: '#000' });
+        this.scoreText = this.add.text(10, 10, `Score: ${gameState.scoreAndTime[0]}`, { fontSize: '32px', fill: '#000' });
         this.blackRectangleStart = this.add.rectangle(400, 300, 800, 600, 0x000000).setAlpha(0);
         this.currentTime = 20;
         this.timeText = this.add.text(10, 50, 'Time: 30', { fontSize: '32px', fill: '#000' });
         this.timeText.setText('Time: ' + this.currentTime + 's');
+        // decrementa o tempo a cada segundo
         this.timer = this.time.addEvent({
             delay: 1000,
             callback: this.updateTime,
@@ -58,9 +61,10 @@ class level2 extends Phaser.Scene {
             loop: true
         
         })
-
+        // Adiciona as setas para o jogador se mover
         this.cursors = this.input.keyboard.createCursorKeys();
 
+        // animações de movimento do jogador
         this.anims.create({
             key: 'left',
             frames: this.anims.generateFrameNumbers('player', { start: 16, end: 23 }),
@@ -92,19 +96,21 @@ class level2 extends Phaser.Scene {
         this.movimentaPlayer();
         this.movimentaPlataformas();
         this.coletaMoedas();
-        this.colideBomba();
+        this.colideBomba(); // checa por colições com bombas
+
+        // consição de vitória ou derrota
         if (this.currentTime === 0) {
             this.scene.start('endScene2');
         }
         if (this.coin1.coletada === true && this.coin2.coletada === true && this.coin3.coletada === true && this.coin4.coletada === true && this.coin5.coletada === true) {
-            gameState.timePassed += 20 - this.currentTime;
+            gameState.scoreAndTime[1] += 20 - this.currentTime;
             this.scene.start('endScene1')
         }
         
     }
 
 
-
+    // cria o player na tela e configura colisões
     criaPlayer() {
         this.player = this.physics.add.sprite(50, 300, 'player').setScale(1.5);
        // this.player.setBounce(0.2);
@@ -119,7 +125,7 @@ class level2 extends Phaser.Scene {
         this.physics.add.collider(this.player, this.plataform7);
         this.physics.add.collider(this.player, this.plataform8);
     }
-
+    // cria plataformas, moedas e bombas na tela
     criaPlataformas() {
         this.coin1 = this.physics.add.image(150, 90, 'coin');
         this.coin2 = this.physics.add.image(300, 270, 'coin');
@@ -138,25 +144,25 @@ class level2 extends Phaser.Scene {
         this.plataform6 = this.physics.add.image(350, 180, 'plataform2').setImmovable(true).setScale(0.4);
         //this.plataform7 = this.physics.add.image(450, 150, 'plataform2').setImmovable(true).setScale(0.4);
         this.plataform8 = this.physics.add.image(150, 250, 'plataform1').setImmovable(true).setScale(0.5);
-        this.plataform1.body.setAllowGravity(false);
-        this.plataform2.body.setAllowGravity(false);
-        this.plataform3.body.setAllowGravity(false);
-        this.plataform4.body.setAllowGravity(false);
-        this.plataform5.body.setAllowGravity(false);
-        this.plataform6.body.setAllowGravity(false);
-       // this.plataform7.body.setAllowGravity(false); 
+
+        for (let i = 1; i <= 6; i++) {
+            this['plataform' + i].body.setAllowGravity(false);
+        }
+
+       // this.plataform7.body.setAllowGravity(false); ]
         this.plataform8.body.setAllowGravity(false);
-        this.coin1.body.setAllowGravity(false);
-        this.coin2.body.setAllowGravity(false);
-        this.coin3.body.setAllowGravity(false);
-        this.coin4.body.setAllowGravity(false);
-        this.coin5.body.setAllowGravity(false);
+
+        for (let i = 1; i <= 5; i++) {
+            this['coin' + i].body.setAllowGravity(false);
+        }
         //this.coin6.body.setAllowGravity(false);
-        this.bomb1.body.setAllowGravity(false);
-        this.bomb2.body.setAllowGravity(false);
-        this.bomb3.body.setAllowGravity(false);
+
+        for (let i = 1; i <= 3; i++) {
+            this['bomb' + i].body.setAllowGravity(false);
+        }
     }
 
+   // Movimenta as plataformas e as moedas da esquerda para a direita 
     movimentaPlataformas() {
         if (this.plataform1.x === 100) {
             this.plataform1.ida = true;
@@ -213,63 +219,6 @@ class level2 extends Phaser.Scene {
             this.plataform4.x -= 2;
             this.coin4.x -= 2;
         }
-/*
-        if (this.plataform5.x === 100) {
-            this.plataform5.ida = true;
-        }
-        if (this.plataform5.x === 700) {
-            this.plataform5.ida = false;
-        }
-        if (this.plataform5.ida) {
-            this.plataform5.x += 5;
-            this.coin5.x += 5;
-        } else {
-            this.plataform5.x -= 5;
-            this.coin5.x -= 5;
-        }
-
-        if (this.plataform6.x === 100) {
-            this.plataform6.ida = true;
-        }
-        if (this.plataform6.x === 700) {
-            this.plataform6.ida = false;
-        }
-        if (this.plataform6.ida) {
-            this.plataform6.x += 5;
-            //this.coin6.x += 5;
-        } else {
-            this.plataform6.x -= 5;
-            //this.coin6.x -= 5;
-        }
-
-        if (this.plataform7.x === 100) {
-            this.plataform5.ida = true;
-        }
-        if (this.plataform7.x === 700) {
-            this.plataform5.ida = false;
-        }
-        if (this.plataform7.ida) {
-            this.plataform7.x += 5;
-            this.bomb1.x += 5;
-        } else {
-            this.plataform7.x -= 5;
-            this.bomb1.x -= 5;
-        }
-
-        if (this.plataform8.x === 100) {
-            this.plataform8.ida = true;
-        }
-        if (this.plataform8.x === 700) {
-            this.plataform8.ida = false;
-        }
-        if (this.plataform8.ida) {
-            this.plataform8.x += 5;
-            this.bomb2.x += 5;
-        } else {
-            this.plataform8.x -= 5;
-            this.bomb2.x -= 5;
-        }
-    */
     }
     
     movimentaPlayer() {
@@ -302,45 +251,46 @@ class level2 extends Phaser.Scene {
             ease: 'Power2'
         });
     }
-
+    // checa por overlaps com moedas e adiciona pontos ao score
     coletaMoedas() {
         if (this.physics.overlap(this.player, this.coin1)) {
-            gameState.score += Math.round(this.currentTime * 0.25);
-            this.scoreText.setText('Score: ' + gameState.score);
+            gameState.scoreAndTime[0] += Math.round(this.currentTime * 0.25);
+            this.scoreText.setText('Score: ' + gameState.scoreAndTime[0]);
             this.coin1.x = -300;
             this.coin1.body.setAllowGravity(true);
             this.coin1.coletada = true;
         }
         if (this.physics.overlap(this.player, this.coin2)) {
-            gameState.score += Math.round(this.currentTime * 0.25);
-            this.scoreText.setText('Score: ' + gameState.score);
+            gameState.scoreAndTime[0] += Math.round(this.currentTime * 0.25);
+            this.scoreText.setText('Score: ' + gameState.scoreAndTime[0]);
             this.coin2.x = -300;
             this.coin2.body.setAllowGravity(true);
             this.coin2.coletada = true;
         }
         if (this.physics.overlap(this.player, this.coin3)) {
-            gameState.score += Math.round(this.currentTime * 0.25);
-            this.scoreText.setText('Score: ' + gameState.score);
+            gameState.scoreAndTime[0] += Math.round(this.currentTime * 0.25);
+            this.scoreText.setText('Score: ' + gameState.scoreAndTime[0]);
             this.coin3.x = -300;
             this.coin3.body.setAllowGravity(true);
             this.coin3.coletada = true;
         }
         if (this.physics.overlap(this.player, this.coin4)) {
-            gameState.score += Math.round(this.currentTime * 0.25);
-            this.scoreText.setText('Score: ' + gameState.score);
+            gameState.scoreAndTime[0] += Math.round(this.currentTime * 0.25);
+            this.scoreText.setText('Score: ' + gameState.scoreAndTime[0]);
             this.coin4.x = -300;
             this.coin4.body.setAllowGravity(true);
             this.coin4.coletada = true;
         }
         if (this.physics.overlap(this.player, this.coin5)) {
-            gameState.score += Math.round(this.currentTime * 0.25);
-            this.scoreText.setText('Score: ' + gameState.score);
+            gameState.scoreAndTime[0] += Math.round(this.currentTime * 0.25);
+            this.scoreText.setText('Score: ' + gameState.scoreAndTime[0]);
             this.coin5.x = -300;
             this.coin5.body.setAllowGravity(true);
             this.coin5.coletada = true;
         }
     }
 
+    // checa por colisões com bombas e termina o jogo
     colideBomba() {
         if (this.physics.overlap(this.player, this.bomb1) || this.physics.overlap(this.player, this.bomb2) || this.physics.overlap(this.player, this.bomb3)){
             this.physics.pause();
@@ -357,7 +307,7 @@ class level2 extends Phaser.Scene {
             });
         }
     }
-
+    // decrementa o tempo a cada segundo
     updateTime() {
         if (this.currentTime != 0) {
             this.currentTime --;

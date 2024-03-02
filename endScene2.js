@@ -10,6 +10,7 @@ class endScene2 extends Phaser.Scene {
     textoFinal;
 
     preload() {
+        // Carrega as imgs
         this.load.image('ceu', 'assets/ceu.png');
         this.load.image('chao', 'assets/chao.png');
         this.load.image('gameOver', 'assets/gameOver.png');
@@ -19,6 +20,7 @@ class endScene2 extends Phaser.Scene {
     }
 
     create() {
+        // Adiciona as imagens e textos na tela de fim de jogo 
         this.ceu = this.add.image(gameState.larguraJogo/2, gameState.alturaJogo/4, 'ceu');    
         this.chao = this.add.image(400, 524, 'chao').setScale(1.1);
         this.gameOver = this.add.image(gameState.larguraJogo/2, 250, 'gameOver').setScale(1);

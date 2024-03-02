@@ -1,9 +1,9 @@
+ // Armazena variáveis que poderão ser usadas em quaisquer cenas
  const gameState = {
     larguraJogo: 800,
     alturaJogo: 600,
-    score: 0,
     hasBeenToStartScene: false,
-    timePassed: 0
+    scoreAndTime: [0, 0]
 }
  // Configuração básica do jogo
  const config = {
@@ -17,8 +17,8 @@
              gravity: { y: 300 }
          }
      },
-
+     // O jogo contem 6 cenas
      scene: [startScene, helpScene, level1, level2, endScene1, endScene2]
  };
-
+// Instancia o objeto do jogo
  const game = new Phaser.Game(config);
